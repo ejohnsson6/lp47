@@ -9,7 +9,12 @@ public class Player : MonoBehaviour
     private new Rigidbody2D rigidbody;
 
     [SerializeField] private GameObject cloud;
-
+    
+    [SerializeField]
+    private Animator modelAnimator;
+    [SerializeField]
+    private Transform modelTransform;
+    
     private float minAllowedY = -10f;
 
     private Vector2 startPosition;
@@ -46,6 +51,7 @@ public class Player : MonoBehaviour
         midRaycastOrigin = new Vector2(transform.position.x, raycastY);
 
         bool onGround = OnGround();
+        bool isRunning = false;
 
         if (onGround)
         {
@@ -60,10 +66,14 @@ public class Player : MonoBehaviour
         if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
         {
             transform.Translate(Vector3.right * Time.deltaTime * speed);
+            modelTransform.localScale = new Vector3(1,1,1);
+            isRunning = true;
         }
         else if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
         {
             transform.Translate(Vector3.left * (Time.deltaTime * speed));
+            modelTransform.localScale = new Vector3(1,1,-1);
+            isRunning = true;
         }
 
         if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.W))
@@ -83,6 +93,8 @@ public class Player : MonoBehaviour
             }
 
         }
+        
+        modelAnimator.SetBool("Running", isRunning);
     }
 
     private bool OnGround()
