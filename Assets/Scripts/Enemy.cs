@@ -28,7 +28,7 @@ public class Enemy : MonoBehaviour
         if (health <= 0)
         {
             onDeathCallback?.Invoke();
-            Destroy(gameObject, 0.1f);
+            Destroy(gameObject, 0.0f);
         }
     }
 }
