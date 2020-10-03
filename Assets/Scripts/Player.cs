@@ -72,9 +72,14 @@ public class Player : MonoBehaviour
     private bool OnGround()
     {
         // Am on on the ground?
-        var hit = Physics2D.Raycast(transform.position - Vector3.up * (boxcollider.size.y * 0.51f), Vector2.up);
-        print(hit.collider == boxcollider);
-        return (hit.collider != boxcollider);
+        Vector3 halfSize = (boxcollider.size * 0.51f);
+        var hitLeft = Physics2D.Raycast(transform.position - halfSize, Vector2.up);
+        var hitRight = Physics2D.Raycast(transform.position - new Vector3( -halfSize.x, halfSize.y, 0), Vector2.up);
+        
+        Debug.DrawRay(transform.position - new Vector3( -halfSize.x, halfSize.y, 0), Vector2.up);
+        Debug.DrawRay(transform.position - halfSize, Vector2.up);
+        print((hitLeft.collider != boxcollider));
+        return (hitLeft.collider != null) || (hitRight.collider != null);
     }
 
     private void Reset()
