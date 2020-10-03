@@ -82,6 +82,7 @@ public class Player : MonoBehaviour
             {
                 print("That sad single jump :(");
                 rigidbody.AddForce(Vector2.up * jumpForce);
+                modelAnimator.SetTrigger("Jump");
             }
             else if (doubleJump)
             {
@@ -95,6 +96,7 @@ public class Player : MonoBehaviour
         }
         
         modelAnimator.SetBool("Running", isRunning);
+        modelAnimator.SetBool("Falling", !onGround);
     }
 
     private bool OnGround()
