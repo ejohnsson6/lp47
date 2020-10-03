@@ -12,6 +12,8 @@ public class Player : MonoBehaviour
     private new Rigidbody2D rigidbody;
     private new BoxCollider2D boxcollider;
 
+    [SerializeField] private GameObject cloud;
+
     private float minAllowedY = -10f;
 
     private Vector2 startPosition;
@@ -63,7 +65,7 @@ public class Player : MonoBehaviour
                 rigidbody.velocity = new Vector2(rigidbody.velocity.x, 0);
                 rigidbody.AddForce(Vector2.up * jumpForce);
                 doubleJump = false;
-                
+                Instantiate(cloud, transform.position - new Vector3(0, boxcollider.size.y * 0.5f, 0), new Quaternion());
             }
             
         }
