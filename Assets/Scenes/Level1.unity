@@ -415,7 +415,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 3
   jumpForce: 250
-  cloud: {fileID: 4209209662758043670, guid: 9e4640fe7562d3fb288d09643698b936, type: 3}
+  cloud: {fileID: 4491306325528218448, guid: 94a94ba865258f66ca2e4f1fd7a52484, type: 3}
 --- !u!61 &810383683
 BoxCollider2D:
   m_ObjectHideFlags: 0
