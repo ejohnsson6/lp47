@@ -39,6 +39,9 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: LitteralySpace
+    uniqueID: 2295430209
+    locked: 0
   - name: Background
     uniqueID: 719203797
     locked: 0
