@@ -9,7 +9,6 @@ public class KillableFromAbove : MonoBehaviour
 
     public virtual void TakeDamage(int amount)
     {
-        print("TAKING DAMAGE!!!!!!!");
         onDamageTaken?.Invoke(amount);
     }
 

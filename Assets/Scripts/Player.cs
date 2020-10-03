@@ -17,6 +17,7 @@ public class Player : MonoBehaviour
 
     private Vector2 leftRaycastOrigin;
     private Vector2 rightRaycastOrigin;
+    private Vector2 midRaycastOrigin;
 
     private Vector2 rayCastVector;
 
@@ -38,8 +39,11 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        leftRaycastOrigin = new Vector2(transform.position.x - (boxCollider.size.x / 2) * 0.99f + boxCollider.offset.x, transform.position.y - ((boxCollider.size.y / 2) * 0.99f) - rayCastVector.y + boxCollider.offset.y);
-        rightRaycastOrigin = new Vector2(transform.position.x + (boxCollider.size.x / 2) * 0.99f + boxCollider.offset.x, transform.position.y - ((boxCollider.size.y / 2) * 0.99f) - rayCastVector.y + boxCollider.offset.y);
+        float raycastY = transform.position.y - ((boxCollider.size.y / 2) * 0.99f) - rayCastVector.y +
+                         boxCollider.offset.y;
+        leftRaycastOrigin = new Vector2(transform.position.x - (boxCollider.size.x / 2) * 0.99f + boxCollider.offset.x, raycastY);
+        rightRaycastOrigin = new Vector2(transform.position.x + (boxCollider.size.x / 2) * 0.99f + boxCollider.offset.x, raycastY);
+        midRaycastOrigin = new Vector2(transform.position.x, raycastY);
 
         bool onGround = OnGround();
 
@@ -86,11 +90,13 @@ public class Player : MonoBehaviour
         // Am on on the ground?
         var hitLeft = Physics2D.Raycast(leftRaycastOrigin, rayCastVector);
         var hitRight = Physics2D.Raycast(rightRaycastOrigin, rayCastVector);
+        var hitmid = Physics2D.Raycast(midRaycastOrigin, rayCastVector);
 
         Debug.DrawRay(leftRaycastOrigin, rayCastVector);
         Debug.DrawRay(rightRaycastOrigin, rayCastVector);
+        Debug.DrawRay(midRaycastOrigin, rayCastVector);
 
-        return (hitLeft.collider != boxCollider) || (hitRight.collider != boxCollider);
+        return (hitLeft.collider != boxCollider) || (hitRight.collider != boxCollider) || (hitmid.collider != boxCollider);
     }
 
     private void Reset()
@@ -103,7 +109,6 @@ public class Player : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-
         if (collision.gameObject == null)
         {
             return;
@@ -111,6 +116,7 @@ public class Player : MonoBehaviour
 
         KillableFromAbove killable;
         if (collision.gameObject.TryGetComponent<KillableFromAbove>(out killable))
+
         {
             // We hit an enemy, if we hit it from above, kill it
             // Otherwise we should take damage or something
