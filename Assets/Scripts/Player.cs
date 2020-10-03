@@ -103,12 +103,14 @@ public class Player : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+
         if (collision.gameObject == null)
         {
             return;
         }
 
-        if (collision.gameObject.tag.Contains("enemy_"))
+        KillableFromAbove killable;
+        if (collision.gameObject.TryGetComponent<KillableFromAbove>(out killable))
         {
             // We hit an enemy, if we hit it from above, kill it
             // Otherwise we should take damage or something
@@ -118,8 +120,12 @@ public class Player : MonoBehaviour
             if (left.collider?.gameObject == collision.gameObject || right.collider?.gameObject == collision.gameObject)
             {
                 // Kill it!
+                killable.TakeDamage(1);
+            }
+            else
+            {
+                Reset();
             }
         }
-
     }
 }
