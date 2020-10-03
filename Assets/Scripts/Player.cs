@@ -60,6 +60,7 @@ public class Player : MonoBehaviour
             
             } else if (doubleJump)
             {
+                rigidbody.velocity = new Vector2(rigidbody.velocity.x, 0);
                 rigidbody.AddForce(Vector2.up * jumpForce);
                 doubleJump = false;
                 
