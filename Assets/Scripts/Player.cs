@@ -116,7 +116,6 @@ public class Player : MonoBehaviour
         transform.position = startPosition;
         transform.rotation = startRotation;
         rigidbody.velocity = Vector2.zero;
-
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
