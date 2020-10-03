@@ -1,6 +1,3 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -10,7 +7,6 @@ public class Player : MonoBehaviour
     [SerializeField]
     private float jumpForce = 5f;
     private new Rigidbody2D rigidbody;
-    private new BoxCollider2D boxcollider;
 
     [SerializeField] private GameObject cloud;
 
@@ -19,6 +15,12 @@ public class Player : MonoBehaviour
     private Vector2 startPosition;
     private Quaternion startRotation;
 
+    private Vector2 leftRaycastOrigin;
+    private Vector2 rightRaycastOrigin;
+
+    private Vector2 rayCastVector;
+
+    private BoxCollider2D boxCollider;
     private static bool doubleJump;
 
 
@@ -26,21 +28,26 @@ public class Player : MonoBehaviour
     void Start()
     {
         rigidbody = GetComponent<Rigidbody2D>();
-        boxcollider = GetComponent<BoxCollider2D>();
+        boxCollider = GetComponent<BoxCollider2D>();
         startPosition = transform.position;
         startRotation = transform.rotation;
+        rayCastVector = Vector2.up * 0.1f;
         doubleJump = true;
     }
 
     // Update is called once per frame
     void Update()
     {
-        var onGround = OnGround();
+        leftRaycastOrigin = new Vector2(transform.position.x - (boxCollider.size.x / 2) * 0.99f + boxCollider.offset.x, transform.position.y - ((boxCollider.size.y / 2) * 0.99f) - rayCastVector.y + boxCollider.offset.y);
+        rightRaycastOrigin = new Vector2(transform.position.x + (boxCollider.size.x / 2) * 0.99f + boxCollider.offset.x, transform.position.y - ((boxCollider.size.y / 2) * 0.99f) - rayCastVector.y + boxCollider.offset.y);
+
+        bool onGround = OnGround();
 
         if (onGround)
         {
             doubleJump = true;
         }
+
         if (transform.position.y <= minAllowedY)
         {
             Reset();
@@ -48,8 +55,9 @@ public class Player : MonoBehaviour
 
         if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
         {
-            transform.Translate(Vector3.right * (Time.deltaTime * speed));
-        } else if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
+            transform.Translate(Vector3.right * Time.deltaTime * speed);
+        }
+        else if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
         {
             transform.Translate(Vector3.left * (Time.deltaTime * speed));
         }
@@ -58,30 +66,31 @@ public class Player : MonoBehaviour
         {
             if (onGround)
             {
+                print("That sad single jump :(");
                 rigidbody.AddForce(Vector2.up * jumpForce);
-            
-            } else if (doubleJump)
+            }
+            else if (doubleJump)
             {
+                print("DOUBLE JUMP!");
                 rigidbody.velocity = new Vector2(rigidbody.velocity.x, 0);
                 rigidbody.AddForce(Vector2.up * jumpForce);
                 doubleJump = false;
-                Instantiate(cloud, transform.position - new Vector3(0, boxcollider.size.y * 0.5f, 0), new Quaternion());
+                Instantiate(cloud, transform.position - new Vector3(0, boxCollider.size.y * 0.5f, 0), new Quaternion());
             }
-            
+
         }
     }
 
     private bool OnGround()
     {
         // Am on on the ground?
-        Vector3 halfSize = (boxcollider.size * 0.51f);
-        var hitLeft = Physics2D.Raycast(transform.position - halfSize, Vector2.up);
-        var hitRight = Physics2D.Raycast(transform.position - new Vector3( -halfSize.x, halfSize.y, 0), Vector2.up);
-        
-        Debug.DrawRay(transform.position - new Vector3( -halfSize.x, halfSize.y, 0), Vector2.up);
-        Debug.DrawRay(transform.position - halfSize, Vector2.up);
-        print((hitLeft.collider != boxcollider));
-        return (hitLeft.collider != null) || (hitRight.collider != null);
+        var hitLeft = Physics2D.Raycast(leftRaycastOrigin, rayCastVector);
+        var hitRight = Physics2D.Raycast(rightRaycastOrigin, rayCastVector);
+
+        Debug.DrawRay(leftRaycastOrigin, rayCastVector);
+        Debug.DrawRay(rightRaycastOrigin, rayCastVector);
+
+        return (hitLeft.collider != boxCollider) || (hitRight.collider != boxCollider);
     }
 
     private void Reset()
@@ -89,6 +98,28 @@ public class Player : MonoBehaviour
         transform.position = startPosition;
         transform.rotation = startRotation;
         rigidbody.velocity = Vector2.zero;
-        
+
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject == null)
+        {
+            return;
+        }
+
+        if (collision.gameObject.tag.Contains("enemy_"))
+        {
+            // We hit an enemy, if we hit it from above, kill it
+            // Otherwise we should take damage or something
+            RaycastHit2D left = Physics2D.Raycast(leftRaycastOrigin, rayCastVector);
+            RaycastHit2D right = Physics2D.Raycast(rightRaycastOrigin, rayCastVector);
+
+            if (left.collider?.gameObject == collision.gameObject || right.collider?.gameObject == collision.gameObject)
+            {
+                // Kill it!
+            }
+        }
+
     }
 }
