@@ -31,17 +31,17 @@ public class Player : MonoBehaviour
         boxCollider = GetComponent<BoxCollider2D>();
         startPosition = transform.position;
         startRotation = transform.rotation;
-        rayCastVector = Vector2.up * 0.001f;
+        rayCastVector = Vector2.up * 0.1f;
         doubleJump = true;
     }
 
     // Update is called once per frame
     void Update()
     {
-        leftRaycastOrigin = new Vector2(transform.position.x - (boxCollider.size.x / 2) * 0.99f, transform.position.y - (boxCollider.size.y / 2) * 0.99f - rayCastVector.y);
-        rightRaycastOrigin = new Vector2(transform.position.x + (boxCollider.size.x / 2) * 0.99f, transform.position.y + (boxCollider.size.y / 2) * 0.99f - rayCastVector.y);
+        leftRaycastOrigin = new Vector2(transform.position.x - (boxCollider.size.x / 2) * 0.99f + boxCollider.offset.x, transform.position.y - ((boxCollider.size.y / 2) * 0.99f) - rayCastVector.y + boxCollider.offset.y);
+        rightRaycastOrigin = new Vector2(transform.position.x + (boxCollider.size.x / 2) * 0.99f + boxCollider.offset.x, transform.position.y - ((boxCollider.size.y / 2) * 0.99f) - rayCastVector.y + boxCollider.offset.y);
 
-        var onGround = OnGround();
+        bool onGround = OnGround();
 
         if (onGround)
         {
@@ -84,13 +84,13 @@ public class Player : MonoBehaviour
     private bool OnGround()
     {
         // Am on on the ground?
-        Vector3 halfSize = (boxCollider.size * 0.51f);
-        var hitLeft = Physics2D.Raycast(transform.position - halfSize, Vector2.up);
-        var hitRight = Physics2D.Raycast(transform.position - new Vector3(-halfSize.x, halfSize.y, 0), Vector2.up);
+        var hitLeft = Physics2D.Raycast(leftRaycastOrigin, rayCastVector);
+        var hitRight = Physics2D.Raycast(rightRaycastOrigin, rayCastVector);
 
-        Debug.DrawRay(transform.position - new Vector3(-halfSize.x, halfSize.y, 0), Vector2.up);
-        Debug.DrawRay(transform.position - halfSize, Vector2.up);
-        return (hitLeft.collider != null) || (hitRight.collider != null);
+        Debug.DrawRay(leftRaycastOrigin, rayCastVector);
+        Debug.DrawRay(rightRaycastOrigin, rayCastVector);
+
+        return (hitLeft.collider != boxCollider) || (hitRight.collider != boxCollider);
     }
 
     private void Reset()
